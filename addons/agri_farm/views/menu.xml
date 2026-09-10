@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_agri_root" name="Farm Management" sequence="5"
+              action="action_agri_dashboard"/>
+
+    <menuitem id="menu_agri_dashboard" name="📊 Dashboard"
+              parent="menu_agri_root"
+              action="action_agri_dashboard"
+              sequence="1"/>
+
+    <menuitem id="menu_agri_farm" name="Farms"
+              parent="menu_agri_root"
+              action="action_agri_farm"
+              sequence="10"/>
+
+    <menuitem id="menu_agri_field" name="Fields"
+              parent="menu_agri_root"
+              action="action_agri_field"
+              sequence="20"/>
+
+    <menuitem id="menu_agri_crop" name="Crops"
+              parent="menu_agri_root"
+              action="action_agri_crop"
+              sequence="30"/>
+
+    <menuitem id="menu_agri_planting" name="Plantings"
+              parent="menu_agri_root"
+              action="action_agri_planting"
+              sequence="40"/>
+
+    <menuitem id="menu_agri_harvest" name="Harvests"
+              parent="menu_agri_root"
+              action="action_agri_harvest"
+              sequence="50"/>
+
+    <menuitem id="menu_agri_harvest_at_risk" name="⚠ At Risk / Expiring"
+              parent="menu_agri_root"
+              action="action_agri_harvest_at_risk"
+              sequence="60"/>
+</odoo>

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_agri_harvest_list" model="ir.ui.view">
+        <field name="name">agri.harvest.list</field>
+        <field name="model">agri.harvest</field>
+        <field name="arch" type="xml">
+            <list string="Harvests"
+                  decoration-muted="state != 'confirmed' or spoilage_status == 'cleared'"
+                  decoration-danger="spoilage_status == 'expired'"
+                  decoration-warning="spoilage_status == 'at_risk'"
+                  decoration-success="spoilage_status == 'fresh'">
+                <field name="name"/>
+                <field name="planting_id"/>
+                <field name="field_id"/>
+                <field name="crop_id"/>
+                <field name="harvest_date"/>
+                <field name="quantity"/>
+                <field name="quantity_remaining"/>
+                <field name="quality_grade"/>
+                <field name="expiration_date"/>
+                <field name="spoilage_status"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_agri_harvest_form" model="ir.ui.view">
+        <field name="name">agri.harvest.form</field>
+        <field name="model">agri.harvest</field>
+        <field name="arch" type="xml">
+            <form string="Harvest">
+                <header>
+                    <button name="action_confirm_harvest" type="object"
+                            string="Confirm Harvest (Add to Stock)"
+                            class="btn-primary"
+                            invisible="state == 'confirmed'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="At Risk" bg_color="text-bg-warning"
+                            invisible="spoilage_status != 'at_risk'"/>
+                    <widget name="web_ribbon" title="Expired" bg_color="text-bg-danger"
+                            invisible="spoilage_status != 'expired'"/>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="planting_id"/>
+                            <field name="crop_id" readonly="1"/>
+                            <field name="field_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="harvest_date"/>
+                            <field name="quantity"/>
+                            <field name="quality_grade"/>
+                        </group>
+                    </group>
+                    <group string="Stock Result" invisible="state != 'confirmed'">
+                        <group>
+                            <field name="lot_id"/>
+                            <field name="picking_id"/>
+                            <field name="quantity_remaining"/>
+                        </group>
+                        <group>
+                            <field name="expiration_date"/>
+                            <field name="spoilage_status"/>
+                            <field name="recommended_action"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="notes"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_agri_harvest_kanban" model="ir.ui.view">
+        <field name="name">agri.harvest.kanban</field>
+        <field name="model">agri.harvest</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="quality_grade">
+                <field name="name"/>
+                <field name="crop_id"/>
+                <field name="field_id"/>
+                <field name="quantity"/>
+                <field name="quantity_remaining"/>
+                <field name="spoilage_status"/>
+                <field name="recommended_action"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_card oe_kanban_global_click p-2">
+                            <strong><field name="name"/></strong>
+                            <div>
+                                <field name="crop_id"/> — <field name="field_id"/>
+                            </div>
+                            <div>
+                                Harvested: <field name="quantity"/> |
+                                Remaining: <field name="quantity_remaining"/>
+                            </div>
+                            <span t-if="record.spoilage_status.raw_value == 'at_risk'"
+                                  class="badge text-bg-warning">At Risk</span>
+                            <span t-if="record.spoilage_status.raw_value == 'expired'"
+                                  class="badge text-bg-danger">Expired</span>
+                            <span t-if="record.spoilage_status.raw_value == 'fresh'"
+                                  class="badge text-bg-success">Fresh</span>
+                            <span t-if="record.spoilage_status.raw_value == 'cleared'"
+                                  class="badge text-bg-secondary">Cleared</span>
+                            <div t-if="record.recommended_action.raw_value"
+                                 class="text-muted small mt-1">
+                                <field name="recommended_action"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_agri_harvest_graph" model="ir.ui.view">
+        <field name="name">agri.harvest.graph</field>
+        <field name="model">agri.harvest</field>
+        <field name="arch" type="xml">
+            <graph string="Harvest Production" type="bar">
+                <field name="crop_id" type="row"/>
+                <field name="quantity" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_agri_harvest_pivot" model="ir.ui.view">
+        <field name="name">agri.harvest.pivot</field>
+        <field name="model">agri.harvest</field>
+        <field name="arch" type="xml">
+            <pivot string="Harvest Production">
+                <field name="field_id" type="row"/>
+                <field name="crop_id" type="row"/>
+                <field name="quality_grade" type="col"/>
+                <field name="quantity" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_agri_harvest_search" model="ir.ui.view">
+        <field name="name">agri.harvest.search</field>
+        <field name="model">agri.harvest</field>
+        <field name="arch" type="xml">
+            <search string="Search Harvests">
+                <field name="name"/>
+                <field name="crop_id"/>
+                <field name="field_id"/>
+                <field name="planting_id"/>
+                <filter string="Confirmed" name="filter_confirmed"
+                        domain="[('state', '=', 'confirmed')]"/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <separator/>
+                <filter string="At Risk / Expiring" name="filter_at_risk"
+                        domain="[('state', '=', 'confirmed'), ('lot_id.alert_date', '!=', False), ('lot_id.alert_date', '&lt;=', datetime.datetime.now()), ('quantity_remaining', '>', 0)]"/>
+                <filter string="Expired" name="filter_expired"
+                        domain="[('state', '=', 'confirmed'), ('lot_id.expiration_date', '!=', False), ('lot_id.expiration_date', '&lt;', datetime.datetime.now())]"/>
+                <filter string="Still Fresh" name="filter_fresh"
+                        domain="[('state', '=', 'confirmed'), '|', ('lot_id.alert_date', '=', False), ('lot_id.alert_date', '>', datetime.datetime.now())]"/>
+                <separator/>
+                <filter string="Group by Crop" name="group_crop" context="{'group_by': 'crop_id'}"/>
+                <filter string="Group by Field" name="group_field" context="{'group_by': 'field_id'}"/>
+                <filter string="Group by Quality Grade" name="group_grade" context="{'group_by': 'quality_grade'}"/>
+                <filter string="Group by Status" name="group_state" context="{'group_by': 'state'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_agri_harvest" model="ir.actions.act_window">
+        <field name="name">Harvests</field>
+        <field name="res_model">agri.harvest</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_agri_harvest_search"/>
+        <field name="context">{'search_default_filter_confirmed': 1}</field>
+    </record>
+
+    <record id="action_agri_dashboard" model="ir.actions.act_window">
+        <field name="name">Dashboard</field>
+        <field name="res_model">agri.harvest</field>
+        <field name="view_mode">kanban,graph,pivot,list,form</field>
+        <field name="search_view_id" ref="view_agri_harvest_search"/>
+        <field name="context">{'search_default_filter_confirmed': 1}</field>
+    </record>
+
+    <record id="action_agri_harvest_at_risk" model="ir.actions.act_window">
+        <field name="name">At Risk / Expiring Harvests</field>
+        <field name="res_model">agri.harvest</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', '=', 'confirmed'), ('lot_id.alert_date', '!=', False), ('lot_id.alert_date', '&lt;=', datetime.datetime.now()), ('quantity_remaining', '>', 0)]</field>
+    </record>
+</odoo>

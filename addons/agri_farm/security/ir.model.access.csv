@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_agri_farm_user,agri.farm.user,model_agri_farm,base.group_user,1,1,1,1
+access_agri_field_user,agri.field.user,model_agri_field,base.group_user,1,1,1,1
+access_agri_crop_user,agri.crop.user,model_agri_crop,base.group_user,1,1,1,1
+access_agri_planting_user,agri.planting.user,model_agri_planting,base.group_user,1,1,1,1
+access_agri_activity_user,agri.activity.user,model_agri_activity,base.group_user,1,1,1,1
+access_agri_harvest_user,agri.harvest.user,model_agri_harvest,base.group_user,1,1,1,1

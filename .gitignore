@@ -1,0 +1,23 @@
+# Environment variables / secrets
+.env
+
+# Database backups
+*.sql
+*.dump
+*.backup
+
+# Odoo filestore / backups
+filestore/
+filestore_backup/
+backup/
+
+# Private keys
+*.pem
+*.key
+
+# Python cache
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
