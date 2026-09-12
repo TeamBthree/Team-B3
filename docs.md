@@ -68,3 +68,26 @@ The cloud deployment will use:
 ## Important
 
 The `rumbit_erp` database is a separate ERP database and must not be modified or included in the B3agric migration.
+## Render Deployment Preparation
+
+The Odoo application has been prepared for container deployment on Render.
+
+A Dockerfile has been added to the project using the official Odoo 19 image:
+
+`FROM odoo:19`
+
+The custom `agri_farm` addon is copied into the Odoo container at:
+
+`/mnt/extra-addons`
+
+The Docker image was tested locally using:
+
+`docker build -t b3agric-odoo .`
+
+The custom addon was verified inside the built image using:
+
+`docker run --rm b3agric-odoo ls /mnt/extra-addons`
+
+The `agri_farm` module was successfully detected.
+
+The `.env` file and database/filestore backups remain excluded from the Git repository because they may contain sensitive information.
