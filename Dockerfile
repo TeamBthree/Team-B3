@@ -7,9 +7,9 @@ USER root
 
 RUN chmod +x /start.sh \
     && mkdir -p /home/odoo/.ssh \
+    && usermod -d /home/odoo -s /bin/bash odoo \
     && chown -R odoo:odoo /home/odoo \
-    && chmod 700 /home/odoo/.ssh \
-    && chsh -s /bin/bash odoo
+    && chmod 700 /home/odoo/.ssh
 
 ENV HOME=/home/odoo
 
